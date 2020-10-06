@@ -67,9 +67,7 @@ int main(void)
     std::cout << "platformID: " <<  platform.getPlatformInfo()->platformID << std::endl;
     std::cout << "platform independent: " << platform.protocolIndependentID << std::endl;
 
-    
     Agent agent;
-
 
     while(1){
 

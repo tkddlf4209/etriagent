@@ -101,7 +101,7 @@ void startScan();
 void startCollect();
 void create(Json::Value value);
 long now();
-void sendMsg(Json::Value value, long dst_pid);
+void sendMsg(Json::Value value,long msg_id, long dst_pid);
 using namespace OC;
 
 class ContentResource{
@@ -197,8 +197,8 @@ long now(){
 }
 
 
-int etri_msgid; // queue_id
-int ocf_msgid; // queue_id
+long etri_msgid; // queue_id
+long ocf_msgid; // queue_id
 void * recv_queue(void * arg){
     msg_data msg;
     int msg_size = sizeof(msg) - sizeof(msg.mtype);
@@ -277,7 +277,8 @@ void * recv_queue(void * arg){
 				    auto cr = sr->list.at(0);
 				    cr -> updateTime(); // 1
 				}
-				sr -> value = value[uri]; // 2
+				//sr -> value = value[uri]; // 2
+				sr -> value = value; // 2
 			    }		
 				
 			}
@@ -298,7 +299,7 @@ void * recv_queue(void * arg){
 	}
 
 	
-	/*if (msgrcv(ocf_msgid,&msg,msg_size,MY_PID,IPC_NOWAIT) > 0){
+	if (msgrcv(ocf_msgid,&msg,msg_size,MY_PID,IPC_NOWAIT) > 0){
 	    //std::cout << "@@@ PID :"<< msg.mtype << std::endl;
 	    
 	    std::string data(msg.data);
@@ -311,6 +312,22 @@ void * recv_queue(void * arg){
 		    if(req_type.compare(CREATE_REQ)==0){
 		    }else if(req_type.compare(CREATE_RSP) == 0){
 		    }else if(req_type.compare(GET_REQ) == 0){
+			
+			for(auto it = subject_map.begin();it!=subject_map.end();it++){
+			    auto sr = it -> second; // Subject Resource
+			    
+			    if(value.isMember(KEY_URI)){
+				
+				std::string key = it ->first; //uri
+
+				if(key.compare(value[KEY_URI].asString())==0){
+				    std::cout << "*** OCF GET REQ *** :: value :: "<< sr -> value << std::endl; 
+				    sendMsg(sr->value,ocf_msgid,PID_OCF);
+				}
+			    }
+			}
+
+
 		    }else if(req_type.compare(GET_RSP) == 0){
 		    }else if(req_type.compare(POST_REQ) == 0){
 		    }else if(req_type.compare(POST_RSP) == 0){
@@ -324,7 +341,7 @@ void * recv_queue(void * arg){
 	    
 	    //std::cout << "data : "<< data<< std::endl;
 	  
-	}*/	
+	}	
 	//sleep(1);
     }
 }
@@ -354,9 +371,12 @@ void onGet(const HeaderOptions& headerOptions, const OCRepresentation& rep,int e
 	    std::string uri = rep.getUri();
 	    std::string id = rep.getHost(); 
 
-	    std::cout << "* OCF GET OK: " << rep.getUri() << " " << id <<std::endl;
-
-	 // update content resource in subject_map
+	    std::cout << "* OCF GET OK: " << rep.getUri() << " " << id << " if size : " << rep.getResourceInterfaces().size() << " rt size : " << rep.getResourceTypes().size() <<std::endl;
+	    for(auto it=rep.begin();it!=rep.end();it++){
+		   std::cout <<  it -> attrname() <<std::endl;
+	    }
+	    
+	    // update content resource in subject_map
 	    if(subject_map.find(uri) != subject_map.end()){
 	
 		//std::cout << "ID : " << id << std::endl;
@@ -364,16 +384,58 @@ void onGet(const HeaderOptions& headerOptions, const OCRepresentation& rep,int e
 		if(subject ->list.size() > 0){
 			subject	-> list.at(0) -> updateTime();
 
+			Json::Value value;
+			value["req_type"] = GET_RSP;
+			Json::Value data;
+
+
 			for(auto it=rep.begin();it!=rep.end();it++){
 	    		    std::string key = it -> attrname();
-			    std::string value = it -> getValueToString();
-			   
-			    subject -> value[key] = value; 
+			    //auto dd = it-> getValue();
+			    
+
+			    switch(it->type()){
+				case OC::AttributeType::Null:{
+				    data[key] = NULL;
+				    break;
+							     }
+				case OC::AttributeType::Integer:
+				    int var1;
+				    rep.getValue(key,var1);
+				    data[key] = var1;
+				    break;
+				case OC::AttributeType::Double:
+				    double var2;
+				    rep.getValue(key,var2);
+				    data[key] = var2;
+				    break;
+				case OC::AttributeType::Boolean:
+				    bool var3;
+				    rep.getValue(key,var3);
+				    data[key] = var3;
+
+				    break;
+				case OC::AttributeType::String:{
+				    std::string var4;
+				    rep.getValue(key,var4);
+				    data[key] = var4;
+				    break;
+				} 
+				case OC::AttributeType::OCRepresentation:
+				case OC::AttributeType::Vector:
+				case OC::AttributeType::Binary:
+				case OC::AttributeType::OCByteString:
+				    data[key] = it -> getValueToString();
+				    break;
+
+			    }
+			    
 			    //std::cout << "@ key : " << key << "  value : " << value<< std::endl;
 			}
 
-
-			//std::cout << "### JSON Value : " << subject -> value << std::endl;
+			value[uri] = data;
+			subject -> value = value; 
+			//std::cout << "### OCF SubjectResource Value : " << subject -> value << std::endl;
 		}
 	    
 	    }
@@ -448,7 +510,7 @@ void create(Json::Value value){
 		    value["result"] = false;
 		}
 
-		sendMsg(value,PID_ETRI);		
+		sendMsg(value,etri_msgid,PID_ETRI);		
 
 	    //}
 	
@@ -526,18 +588,18 @@ void * resourceScan(void * p){
     while(1){
 	std::cout << "************ OCF resource Scan *************\n";
 	OCPlatform::findResource("",requestURI.str(),CT_DEFAULT,&foundResource);
-	sleep(5);
+	sleep(OCF_SCAN_PERIOD);
     }
 }
 
 Json::FastWriter fw;
-void sendMsg(Json::Value value, long dst_pid){
+void sendMsg(Json::Value value,long msg_id ,long dst_pid){
     msg_data send_msg;
     send_msg.mtype = dst_pid;
     std::string out = fw.write(value);
     strcpy(send_msg.data,out.c_str());
     int msg_size = sizeof(send_msg) - sizeof(send_msg.mtype);
-    int rtn = msgsnd(etri_msgid,&send_msg,msg_size,0);
+    int rtn = msgsnd(msg_id,&send_msg,msg_size,0);
 }
 
 
@@ -610,13 +672,13 @@ void * collect(void * p){
 			    data["dc"] = true;
 			    value["req_type"] = POST_REQ;
 			    value[ cr -> etri_resource["uri"].asString()] = data;
-			    sendMsg(value,PID_ETRI);
+			    sendMsg(value,etri_msgid,PID_ETRI);
 
 			}else{
 			    value["req_type"] = GET_REQ;
 			    value["uri"] = cr -> etri_resource["uri"].asString();
 			    value["id"] = cr -> etri_resource["id"].asString();
-			    sendMsg(value,PID_ETRI);
+			    sendMsg(value,etri_msgid,PID_ETRI);
 			}
 				
 		    }
