@@ -1,0 +1,113 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+BinarySwitchResource	./BinarySwitchResource.cpp	/^BinarySwitchResource::BinarySwitchResource(std::string resourceUri):$/;"	f	class:BinarySwitchResource
+BinarySwitchResource	./BinarySwitchResource.h	/^class BinarySwitchResource : public Resource$/;"	c
+DuplicateString	./Platform.cpp	/^void DuplicateString(char ** targetString, std::string sourceString)$/;"	f
+EXAMPLE_OCF_LIGHT_BINARYSWITCHRESOURCE_H_	./BinarySwitchResource.h	24;"	d
+EXAMPLE_OCF_LIGHT_BINARYSWITCHRESOURCE_H_	./temp/TemperatureResource.h	24;"	d
+EXAMPLE_OCF_LIGHT_DIMMINGRESOURCE_H_	./TemperatureResource.h	24;"	d
+EXAMPLE_OCF_LIGHT_PLATFORM_H_	./Platform.h	24;"	d
+EXAMPLE_OCF_LIGHT_RESOURCE_H_	./Resource.h	24;"	d
+INTERFACE_KEY	./BinarySwitchResource.cpp	30;"	d	file:
+INTERFACE_KEY	./TemperatureResource.cpp	28;"	d	file:
+Platform	./Platform.cpp	/^Platform::Platform(void)$/;"	f	class:Platform
+Platform	./Platform.h	/^class Platform$/;"	c
+Resource	./Resource.h	/^class Resource$/;"	c
+TemperatureResource	./TemperatureResource.cpp	/^TemperatureResource::TemperatureResource(std::string resourceUri):$/;"	f	class:TemperatureResource
+TemperatureResource	./TemperatureResource.h	/^class TemperatureResource : public Resource$/;"	c
+TemperatureResource	./temp/TemperatureResource.cpp	/^TemperatureResource::TemperatureResource(std::string resourceUri):$/;"	f	class:TemperatureResource
+TemperatureResource	./temp/TemperatureResource.h	/^class TemperatureResource : public Resource$/;"	c
+dataModelVersions	./Platform.h	/^    std::vector<std::string> dataModelVersions;$/;"	m	class:Platform
+deletePlatformInfo	./Platform.cpp	/^void Platform::deletePlatformInfo(void)$/;"	f	class:Platform
+deviceName	./Platform.h	/^    std::string  deviceName = "Etri CTT Test Device";$/;"	m	class:Platform
+deviceType	./Platform.h	/^    std::string  deviceType = "oic.wk.d";$/;"	m	class:Platform
+entityHandler	./BinarySwitchResource.cpp	/^OCEntityHandlerResult BinarySwitchResource::entityHandler(std::shared_ptr<OC::OCResourceRequest> request)$/;"	f	class:BinarySwitchResource
+entityHandler	./TemperatureResource.cpp	/^OCEntityHandlerResult TemperatureResource::entityHandler(std::shared_ptr<OC::OCResourceRequest> request)$/;"	f	class:TemperatureResource
+entityHandler	./temp/TemperatureResource.cpp	/^OCEntityHandlerResult TemperatureResource::entityHandler(std::shared_ptr<OC::OCResourceRequest> request)$/;"	f	class:TemperatureResource
+get	./BinarySwitchResource.cpp	/^OC::OCRepresentation BinarySwitchResource::get(OC::QueryParamsMap queries)$/;"	f	class:BinarySwitchResource
+get	./TemperatureResource.cpp	/^OC::OCRepresentation TemperatureResource::get(OC::QueryParamsMap queries)$/;"	f	class:TemperatureResource
+get	./temp/TemperatureResource.cpp	/^OC::OCRepresentation TemperatureResource::get(OC::QueryParamsMap queries)$/;"	f	class:TemperatureResource
+getPlatformInfo	./Platform.cpp	/^OCPlatformInfo* Platform::getPlatformInfo(void)$/;"	f	class:Platform
+getTemp	./TemperatureResource.cpp	/^int TemperatureResource::getTemp(void)$/;"	f	class:TemperatureResource
+getValue	./BinarySwitchResource.cpp	/^bool BinarySwitchResource::getValue(void)$/;"	f	class:BinarySwitchResource
+getValue	./temp/TemperatureResource.cpp	/^bool TemperatureResource::getValue(void)$/;"	f	class:TemperatureResource
+in_updatable_interfaces	./BinarySwitchResource.h	/^    bool in_updatable_interfaces(std::string interface_name)$/;"	f	class:BinarySwitchResource
+in_updatable_interfaces	./TemperatureResource.h	/^    bool in_updatable_interfaces(std::string interface_name)$/;"	f	class:TemperatureResource
+m_IF_UPDATE	./BinarySwitchResource.h	/^    std::string m_IF_UPDATE[3]; \/\/ updateble interfaces$/;"	m	class:BinarySwitchResource
+m_IF_UPDATE	./TemperatureResource.h	/^    std::string m_IF_UPDATE[3]; \/\/ updatable interfaces$/;"	m	class:TemperatureResource
+m_RESOURCE_INTERFACE	./BinarySwitchResource.h	/^    std::string m_RESOURCE_INTERFACE[2]; \/\/ interface if (as an array)$/;"	m	class:BinarySwitchResource
+m_RESOURCE_INTERFACE	./TemperatureResource.h	/^    std::string m_RESOURCE_INTERFACE[2]; \/\/ interface if (as an array)$/;"	m	class:TemperatureResource
+m_RESOURCE_INTERFACE	./temp/TemperatureResource.h	/^    std::string m_RESOURCE_INTERFACE[2]; \/\/ interface if (as an array)$/;"	m	class:TemperatureResource
+m_RESOURCE_TYPE	./BinarySwitchResource.h	/^    std::string m_RESOURCE_TYPE[1]; \/\/ rt value (as an array)$/;"	m	class:BinarySwitchResource
+m_RESOURCE_TYPE	./TemperatureResource.h	/^    std::string m_RESOURCE_TYPE[1]; \/\/ rt value (as an array)$/;"	m	class:TemperatureResource
+m_RESOURCE_TYPE	./temp/TemperatureResource.h	/^    std::string m_RESOURCE_TYPE[1]; \/\/ rt value (as an array)$/;"	m	class:TemperatureResource
+m_dateOfManufacture	./Platform.h	/^    std::string m_dateOfManufacture = "2017-12-01";$/;"	m	class:Platform
+m_firmwareVersion	./Platform.h	/^    std::string m_firmwareVersion = "1.0";$/;"	m	class:Platform
+m_hardwareVersion	./Platform.h	/^    std::string m_hardwareVersion = "1.0";$/;"	m	class:Platform
+m_interestedObservers	./BinarySwitchResource.h	/^    OC::ObservationIds m_interestedObservers;$/;"	m	class:BinarySwitchResource
+m_interestedObservers	./TemperatureResource.h	/^    OC::ObservationIds m_interestedObservers;$/;"	m	class:TemperatureResource
+m_interestedObservers	./temp/TemperatureResource.h	/^    OC::ObservationIds m_interestedObservers;$/;"	m	class:TemperatureResource
+m_manufacturerLink	./Platform.h	/^    std::string m_manufacturerLink = "https:\/\/ocf.org\/";$/;"	m	class:Platform
+m_manufacturerName	./Platform.h	/^    std::string m_manufacturerName = "ocf";$/;"	m	class:Platform
+m_modelNumber	./Platform.h	/^    std::string m_modelNumber = "ModelNumber";$/;"	m	class:Platform
+m_operatingSystemVersion	./Platform.h	/^    std::string m_operatingSystemVersion = "myOS";$/;"	m	class:Platform
+m_platformId	./Platform.h	/^    std::string m_platformId = "0A3E0D6F-DBF5-404E-8719-D6880042463A";$/;"	m	class:Platform
+m_platformVersion	./Platform.h	/^    std::string m_platformVersion = "1.0";$/;"	m	class:Platform
+m_rep	./Resource.h	/^    OC::OCRepresentation m_rep;$/;"	m	class:Resource
+m_resourceHandle	./Resource.h	/^    OCResourceHandle m_resourceHandle;$/;"	m	class:Resource
+m_resourceUri	./BinarySwitchResource.h	/^    std::string m_resourceUri;$/;"	m	class:BinarySwitchResource
+m_resourceUri	./TemperatureResource.h	/^    std::string m_resourceUri;$/;"	m	class:TemperatureResource
+m_resourceUri	./temp/TemperatureResource.h	/^    std::string m_resourceUri;$/;"	m	class:TemperatureResource
+m_supportLink	./Platform.h	/^    std::string m_supportLink = "https:\/\/ocf.org\/";$/;"	m	class:Platform
+m_systemTime	./Platform.h	/^    std::string m_systemTime = "2017-12-01T12:00:00.52Z";$/;"	m	class:Platform
+m_var_name_if	./BinarySwitchResource.h	/^    std::string m_var_name_if; \/\/ the name for the attribute$/;"	m	class:BinarySwitchResource
+m_var_name_if	./TemperatureResource.h	/^    std::string m_var_name_if; \/\/ the name for the attribute$/;"	m	class:TemperatureResource
+m_var_name_n	./BinarySwitchResource.h	/^    std::string m_var_name_n; \/\/ the name for the attribute$/;"	m	class:BinarySwitchResource
+m_var_name_n	./TemperatureResource.h	/^    std::string m_var_name_n; \/\/ the name for the attribute$/;"	m	class:TemperatureResource
+m_var_name_rt	./BinarySwitchResource.h	/^    std::string m_var_name_rt; \/\/ the name for the attribute$/;"	m	class:BinarySwitchResource
+m_var_name_rt	./TemperatureResource.h	/^    std::string m_var_name_rt; \/\/ the name for the attribute$/;"	m	class:TemperatureResource
+m_var_name_temperature	./TemperatureResource.h	/^    std::string m_var_name_temperature; \/\/ the name for the attribute$/;"	m	class:TemperatureResource
+m_var_name_temperature	./temp/TemperatureResource.h	/^    std::string m_var_name_temperature; \/\/ the name for the attribute$/;"	m	class:TemperatureResource
+m_var_name_value	./BinarySwitchResource.h	/^    std::string m_var_name_value; \/\/ the name for the attribute$/;"	m	class:BinarySwitchResource
+m_var_value_if	./BinarySwitchResource.h	/^    std::vector<std::string>  m_var_value_if;$/;"	m	class:BinarySwitchResource
+m_var_value_if	./TemperatureResource.h	/^    std::vector<std::string>  m_var_value_if;$/;"	m	class:TemperatureResource
+m_var_value_if	./temp/TemperatureResource.h	/^    std::vector<std::string>  m_var_value_if;$/;"	m	class:TemperatureResource
+m_var_value_n	./BinarySwitchResource.h	/^    std::string m_var_value_n; \/\/ the value for the attribute$/;"	m	class:BinarySwitchResource
+m_var_value_n	./TemperatureResource.h	/^    std::string m_var_value_n; \/\/ the value for the attribute$/;"	m	class:TemperatureResource
+m_var_value_n	./temp/TemperatureResource.h	/^    std::string m_var_value_n; \/\/ the value for the attribute$/;"	m	class:TemperatureResource
+m_var_value_rt	./BinarySwitchResource.h	/^    std::vector<std::string>  m_var_value_rt;$/;"	m	class:BinarySwitchResource
+m_var_value_rt	./TemperatureResource.h	/^    std::vector<std::string>  m_var_value_rt;$/;"	m	class:TemperatureResource
+m_var_value_rt	./temp/TemperatureResource.h	/^    std::vector<std::string>  m_var_value_rt;$/;"	m	class:TemperatureResource
+m_var_value_temperature	./TemperatureResource.h	/^    int m_var_value_temperature; \/\/ the value for the attribute$/;"	m	class:TemperatureResource
+m_var_value_temperature	./temp/TemperatureResource.h	/^    float m_var_value_temperature; \/\/ the value for the attribute$/;"	m	class:TemperatureResource
+m_var_value_value	./BinarySwitchResource.h	/^    bool m_var_value_value; \/\/ the value for the attribute$/;"	m	class:BinarySwitchResource
+main	./main.cpp	/^int main(void)$/;"	f
+platformInfo	./Platform.h	/^    OCPlatformInfo platformInfo;$/;"	m	class:Platform
+post	./BinarySwitchResource.cpp	/^OCEntityHandlerResult BinarySwitchResource::post(OC::QueryParamsMap queries, const OC::OCRepresentation& rep)$/;"	f	class:BinarySwitchResource
+post	./TemperatureResource.cpp	/^OCEntityHandlerResult TemperatureResource::post(OC::QueryParamsMap queries, const OC::OCRepresentation& rep)$/;"	f	class:TemperatureResource
+protocolIndependentID	./Platform.h	/^    std::string  protocolIndependentID = "fa008167-3bbf-4c9d-8604-c9bcb96cb712";$/;"	m	class:Platform
+registerPlatformInfo	./Platform.cpp	/^OCStackResult Platform::registerPlatformInfo(void)$/;"	f	class:Platform
+registerResource	./BinarySwitchResource.cpp	/^OCStackResult BinarySwitchResource::registerResource(uint8_t resourceProperty)$/;"	f	class:BinarySwitchResource
+registerResource	./TemperatureResource.cpp	/^OCStackResult TemperatureResource::registerResource(uint8_t resourceProperty)$/;"	f	class:TemperatureResource
+registerResource	./temp/TemperatureResource.cpp	/^OCStackResult TemperatureResource::registerResource(uint8_t resourceProperty)$/;"	f	class:TemperatureResource
+sendNotification	./BinarySwitchResource.cpp	/^OCStackResult BinarySwitchResource::sendNotification(void)$/;"	f	class:BinarySwitchResource
+sendNotification	./TemperatureResource.cpp	/^OCStackResult TemperatureResource::sendNotification(void)$/;"	f	class:TemperatureResource
+sendNotification	./temp/TemperatureResource.cpp	/^OCStackResult TemperatureResource::sendNotification(void)$/;"	f	class:TemperatureResource
+server_fopen	./Platform.cpp	/^FILE* server_fopen(const char* path, const char* mode)$/;"	f
+setDeviceInfo	./Platform.cpp	/^OCStackResult Platform::setDeviceInfo()$/;"	f	class:Platform
+setPlatformInfo	./Platform.cpp	/^void Platform::setPlatformInfo(std::string platformID, std::string manufacturerName,$/;"	f	class:Platform
+setTemp	./TemperatureResource.cpp	/^void TemperatureResource::setTemp(int temp)$/;"	f	class:TemperatureResource
+setValue	./BinarySwitchResource.cpp	/^void BinarySwitchResource::setValue(bool newValue)$/;"	f	class:BinarySwitchResource
+setValue	./temp/TemperatureResource.cpp	/^void TemperatureResource::setValue(bool newValue)$/;"	f	class:TemperatureResource
+specVersion	./Platform.h	/^    std::string  specVersion = "ocf.1.1.0";$/;"	m	class:Platform
+start	./Platform.cpp	/^OCStackResult Platform::start(void)$/;"	f	class:Platform
+stop	./Platform.cpp	/^OCStackResult Platform::stop(void)$/;"	f	class:Platform
+~BinarySwitchResource	./BinarySwitchResource.cpp	/^BinarySwitchResource::~BinarySwitchResource(void) { }$/;"	f	class:BinarySwitchResource
+~Platform	./Platform.cpp	/^Platform::~Platform(void)$/;"	f	class:Platform
+~Resource	./Resource.h	/^    virtual ~Resource() { };$/;"	f	class:Resource
+~TemperatureResource	./TemperatureResource.cpp	/^TemperatureResource::~TemperatureResource(void) { }$/;"	f	class:TemperatureResource
+~TemperatureResource	./temp/TemperatureResource.cpp	/^TemperatureResource::~TemperatureResource(void) { }$/;"	f	class:TemperatureResource
