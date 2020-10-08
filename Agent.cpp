@@ -46,7 +46,7 @@
 #include "OCApi.h"
 #include "iotivity_config.h"
 
-#define SCAN_RESOURCE_TYPE "core.light"
+#define SCAN_RESOURCE_TYPE "oic.r.dev"
 
 
 // IPC PROP
@@ -85,14 +85,14 @@ const  std::string KEY_URI ="uri";
 
 int  DEVICE_TYPE_OCF =  1;
 int  DEVICE_TYPE_ETRI = 2;
-int  COLLECT_PERIOD = 3;
+int  COLLECT_PERIOD = 10;
 int  OCF_SCAN_PERIOD = 5;
 
 
 class ContentResource;
 class SubjectResource;
 
-std::set<std::string> uri_filter;
+//std::set<std::string> uri_filter;
 std::map<std::string,SubjectResource*> subject_map;
 std::mutex mutex;
 
@@ -102,6 +102,8 @@ void startCollect();
 void create(Json::Value value);
 long now();
 void sendMsg(Json::Value value,long msg_id, long dst_pid);
+void get_request(SubjectResource* sr, std::string uri);
+bool post_request(SubjectResource* sr,std::string uri,bool binaryswitch);
 using namespace OC;
 
 class ContentResource{
@@ -119,8 +121,6 @@ class ContentResource{
 	
 	// dc info
 	bool dc;
-	
-
 
 	ContentResource(std::string id, std::shared_ptr<OCResource> &ocf_resource,bool dc){
 	    this->device_type = DEVICE_TYPE_OCF;
@@ -208,7 +208,7 @@ void * recv_queue(void * arg){
 	std::cout << "etri_msgid msgget() Error" << std::endl;
     }else{
 	//etri queue clear
-	while(msgrcv(etri_msgid,&msg,msg_size,MY_PID,IPC_NOWAIT) > 0){
+	while(msgrcv(etri_msgid,&msg,msg_size,0,IPC_NOWAIT) > 0){
 	
 	}
     }
@@ -221,14 +221,13 @@ void * recv_queue(void * arg){
 	std::cout << "ocf_msgid msgget() Error" << std::endl;
     }else{
 	//ocf queue clear
-	while(msgrcv(ocf_msgid,&msg,msg_size,MY_PID,IPC_NOWAIT) > 0){
+	while(msgrcv(ocf_msgid,&msg,msg_size,0,IPC_NOWAIT) > 0){
 	
 	}
 
     }
 
     std::cout << "ocf_msgid = "<< ocf_msgid << std::endl;
-
 
     Json::Value value;
     Json::Reader reader;
@@ -259,8 +258,6 @@ void * recv_queue(void * arg){
 			// if not added , create ContentResource
 			create(value);
 		    }else if(req_type.compare(GET_RSP) == 0){ 
-
-			
 			
 			// update info
 			// 1. update first ContentResource list data in same uri SubjectResource
@@ -285,6 +282,7 @@ void * recv_queue(void * arg){
 				
 		    }else if(req_type.compare(POST_RSP) == 0){
 			//1. dc update response	
+
 		    }
 		
 		}
@@ -299,6 +297,7 @@ void * recv_queue(void * arg){
 	}
 
 	
+	// OCF MSG QUEUE
 	if (msgrcv(ocf_msgid,&msg,msg_size,MY_PID,IPC_NOWAIT) > 0){
 	    //std::cout << "@@@ PID :"<< msg.mtype << std::endl;
 	    
@@ -313,6 +312,18 @@ void * recv_queue(void * arg){
 		    }else if(req_type.compare(CREATE_RSP) == 0){
 		    }else if(req_type.compare(GET_REQ) == 0){
 			
+			if(value.isMember(KEY_URI)){
+			    std::lock_guard<std::mutex> lock{mutex};
+			    if(subject_map.find(value[KEY_URI].asString()) != subject_map.end()){
+				auto sr = subject_map.find(value[KEY_URI].asString())-> second;
+				std::cout << "*** OCF GET REQ *** :: value :: "<< sr -> value << std::endl; 
+				sendMsg(sr->value,ocf_msgid,PID_OCF);
+			    }else{
+				
+			    }
+			}
+
+			/*
 			for(auto it = subject_map.begin();it!=subject_map.end();it++){
 			    auto sr = it -> second; // Subject Resource
 			    
@@ -326,10 +337,28 @@ void * recv_queue(void * arg){
 				}
 			    }
 			}
-
+			*/
 
 		    }else if(req_type.compare(GET_RSP) == 0){
 		    }else if(req_type.compare(POST_REQ) == 0){
+				
+			if(value.isMember(KEY_URI)){
+			    std::lock_guard<std::mutex> lock{mutex};
+			    std::cout << "POST_REQ " << value[KEY_URI].asString() << " value : " << value["binaryswitch"]["value"].asBool() << std::endl;
+			    if(subject_map.find(value[KEY_URI].asString()) != subject_map.end()){
+				auto sr = subject_map.find(value[KEY_URI].asString())-> second;
+				bool result = post_request(sr,value[KEY_URI].asString(),value["binaryswitch"]["value"].asBool());
+				
+				Json::Value value;
+				value["req_type"] = POST_RSP;
+				value["result"] = result;
+				
+				sendMsg(value,ocf_msgid,PID_OCF);
+			    }
+
+			}
+
+
 		    }else if(req_type.compare(POST_RSP) == 0){
 		    }
 		
@@ -346,17 +375,20 @@ void * recv_queue(void * arg){
     }
 }
 
-
+/*
 void initUriFilter(){
     uri_filter.insert("/temperature");
     uri_filter.insert("/humidity");
 }
+*/
 
 void onPost(const HeaderOptions& /*headerOptions*/, const OCRepresentation& rep, const int eCode)
 {
 
 
 }
+
+
 // Callback handler on GET request
 void onGet(const HeaderOptions& headerOptions, const OCRepresentation& rep,int eCode)
 {
@@ -371,10 +403,10 @@ void onGet(const HeaderOptions& headerOptions, const OCRepresentation& rep,int e
 	    std::string uri = rep.getUri();
 	    std::string id = rep.getHost(); 
 
-	    std::cout << "* OCF GET OK: " << rep.getUri() << " " << id << " if size : " << rep.getResourceInterfaces().size() << " rt size : " << rep.getResourceTypes().size() <<std::endl;
-	    for(auto it=rep.begin();it!=rep.end();it++){
-		   std::cout <<  it -> attrname() <<std::endl;
-	    }
+	    std::cout << "* OCF GET OK , URI :" << rep.getUri() << " ID : " << id  <<std::endl;
+	   // for(auto it=rep.begin();it!=rep.end();it++){
+	   //	   std::cout <<  it -> attrname() <<std::endl;
+	   //  }
 	    
 	    // update content resource in subject_map
 	    if(subject_map.find(uri) != subject_map.end()){
@@ -536,7 +568,9 @@ void foundResource(std::shared_ptr<OCResource> resource){
 
 	std::string uri = resource->uri();
 	//std::cout << "URI : " << resource->uri() << std::endl;
-	if(uri_filter.find(uri) != uri_filter.end()){
+	
+	
+	//if(uri_filter.find(uri) != uri_filter.end()){
 	    std::lock_guard<std::mutex> lock{mutex};
 	    
 	    
@@ -561,7 +595,7 @@ void foundResource(std::shared_ptr<OCResource> resource){
 		    if(resourceTypes.compare(OCF_DC_RT_NAME) == 0){
 			dc= true;
 		    }
-		    std::cout << "\t\t" << resourceTypes << std::endl;
+		    //std::cout << "\t\t" << resourceTypes << std::endl;
 		}
 
 		subject_map.find(uri)->second->	list.push_back(new ContentResource(id,resource,dc));
@@ -575,7 +609,7 @@ void foundResource(std::shared_ptr<OCResource> resource){
 
 	    //QueryParamsMap q;
 	    //resource -> get(q,&onGet,OC::QualityOfService::LowQos);
-	}
+	//}
     }
 }
 
@@ -583,7 +617,7 @@ void foundResource(std::shared_ptr<OCResource> resource){
 void * resourceScan(void * p){
     // start ocf resource scan
     std::ostringstream requestURI;
-    requestURI << OC_RSRVD_WELL_KNOWN_URI; //<< "?rt=" << SCAN_RESOURCE_TYPE;
+    requestURI << OC_RSRVD_WELL_KNOWN_URI << "?rt=" << SCAN_RESOURCE_TYPE;
     
     while(1){
 	std::cout << "************ OCF resource Scan *************\n";
@@ -602,20 +636,44 @@ void sendMsg(Json::Value value,long msg_id ,long dst_pid){
     int rtn = msgsnd(msg_id,&send_msg,msg_size,0);
 }
 
+bool post_request(SubjectResource* sr,std::string uri,bool binaryswitch){
+	  if(sr -> list.size() >0){
+		// get the first resource in the list ;
+		auto cr = sr -> list.at(0); // get the first resource in the list;
 
-void * collect(void * p){
-    while(1){
-	sleep(COLLECT_PERIOD);
+		if(cr){
+		    if(cr -> device_type == 1){// OCF
+			    QueryParamsMap q;
+			    OCRepresentation rep; 
+			    rep.setValue("value",binaryswitch);
+			    std::cout << "OCF POST INFO : " << cr -> ocf_resource -> uri() << std::endl;
+			    cr -> ocf_resource -> post(rep,q,&onPost,OC::QualityOfService::LowQos);
+		    }else{ // ETRI MCMSG/DCMSG
 
-	for(auto it = subject_map.begin();it!=subject_map.end();it++){
-	    auto sr = it -> second; // Subject Resource
+			    Json::Value value;
 
+			    Json::Value data;
+			    data["value"] = binaryswitch;
+			    
+			    value["req_type"] = POST_REQ;
+			    value[uri] = data;
+			    sendMsg(value,etri_msgid,PID_ETRI);
+				
+		    }
+		}
+	
+		return true;
+	}else{
+		return false;
+	}
+
+}
+
+void get_request(SubjectResource* sr, std::string uri){
 	    //std::cout << " DEBUG :: URI" << it -> first << "// list.size() = " << sr -> list.size() << std::endl;
 	    if(sr -> list.size() >0){
 		// get the first resource in the list ;
 		auto cr = sr -> list.at(0); // get the first resource in the list;
-
-
 
 		bool init = false;
 		if(cr -> timestamp == 0 ){
@@ -629,7 +687,7 @@ void * collect(void * p){
 		    // called when cr endpoint is not response
 		    //
 		    //std::cout << now() << " ::  " << cr-> timestamp << " :: " << COLLECT_PERIOD * 2  << std::endl;
-		    if(now() - cr -> timestamp > (COLLECT_PERIOD * 2)){
+		    if(now() - cr -> timestamp > COLLECT_PERIOD){
 
 			//sync
 			std::lock_guard<std::mutex> lock{mutex};
@@ -637,7 +695,7 @@ void * collect(void * p){
 			// delete unresponsive CR(ContentResource) 
 			delete cr;
 			sr -> list.erase(sr->list.begin());
-			std::cout << "* DELETE Content Resource (RESPONSE_TIME_OUT) URI :" << it-> first << ",  list.size() = " << sr -> list.size() << std::endl;
+			std::cout << "* DELETE Content Resource (RESPONSE_TIME_OUT) URI :" << uri << ",  list.size() = " << sr -> list.size() << std::endl;
 
 			// replace with the first cr resource (if the list size is more than one)
 			if(sr -> list.size() > 0 ){
@@ -657,11 +715,14 @@ void * collect(void * p){
 			    OCRepresentation rep; 
 			    QueryParamsMap q;
 			    rep.setValue("dc", true);
+			    std::cout << "OCF POST REQ INFO : " << cr -> ocf_resource -> uri() << std::endl;
 			    cr -> ocf_resource -> post(rep,q,&onPost,OC::QualityOfService::LowQos);
 			}else{
 			    //GET REQUEST 
 			    QueryParamsMap q;
-			    //cr -> ocf_resource -> get(q,&onGet,OC::QualityOfService::HighQos);
+			    
+			    //usleep(100000);
+			    std::cout << "OCF GET REQ INFO : " << cr -> ocf_resource -> uri() << std::endl;
 			    cr -> ocf_resource -> get(q,&onGet,OC::QualityOfService::LowQos);
 			}
 		    }else{ // ETRI MCMSG/DCMSG
@@ -685,6 +746,16 @@ void * collect(void * p){
 		}
 		
 	    }
+}
+
+
+void * collect(void * p){
+    while(1){
+	sleep(COLLECT_PERIOD);
+
+	for(auto it = subject_map.begin();it!=subject_map.end();it++){
+	    auto sr = it -> second; // Subject Resource
+	    get_request(sr, it->first);
 	}
 
     }
@@ -694,7 +765,7 @@ void * collect(void * p){
 Agent::Agent(void)
 {
     std::cout << "Running: Agent constructor" << std::endl;
-    initUriFilter();
+    //initUriFilter();
     startScan();
     startCollect(); 
     startRecvQueue();
